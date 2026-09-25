@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+.git
+.env
+secrets
+*.pem
+*.key
+*.crt
+npm-debug.log*

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+.env
+*.local
+secrets/*
+!secrets/.gitkeep
+*.pem
+*.key
+*.crt
+npm-debug.log*
+.DS_Store

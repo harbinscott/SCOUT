@@ -1,0 +1,11 @@
+services:
+  app:
+    environment:
+      USE_MOCK_DATA: "false"
+      GOOGLE_ISOCHRONES_SERVER_KEY_FILE: /run/secrets/isochrones_server_key
+    secrets:
+      - isochrones_server_key
+
+secrets:
+  isochrones_server_key:
+    file: ${SC_ISOCHRONES_KEY_FILE:-./secrets/isochrones_key.txt}

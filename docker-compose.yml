@@ -1,0 +1,49 @@
+name: sc
+
+services:
+  app:
+    build:
+      context: .
+    image: local/scout-simple-commuter:1.0.4
+    container_name: sc_app
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${SC_HTTP_PORT:-3001}:3001"
+    environment:
+      PORT: 3001
+      HTTPS_ENABLED: "false"
+      TRUST_PROXY: "true"
+      BASE_PATH: ${BASE_PATH:-/scout}
+      USE_MOCK_DATA: ${USE_MOCK_DATA:-true}
+      GOOGLE_MAPS_BROWSER_KEY: ${GOOGLE_MAPS_BROWSER_KEY:-}
+      TRAFFIC_CACHE_MINUTES: ${TRAFFIC_CACHE_MINUTES:-15}
+      STATIC_CACHE_DAYS: ${STATIC_CACHE_DAYS:-7}
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-30}
+      MAX_EXTERNAL_CALLS_PER_HOUR: ${MAX_EXTERNAL_CALLS_PER_HOUR:-60}
+      MAX_EXTERNAL_CALLS_PER_DAY: ${MAX_EXTERNAL_CALLS_PER_DAY:-200}
+      MAX_EXTERNAL_CALLS_PER_MONTH: ${MAX_EXTERNAL_CALLS_PER_MONTH:-8000}
+      USAGE_BUDGET_FILE: /app/data/google-call-budget.json
+    volumes:
+      - sc_data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/scout/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+volumes:
+  sc_data:
+    name: sc_data
